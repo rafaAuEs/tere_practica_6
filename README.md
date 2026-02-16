@@ -1,0 +1,1 @@
+# tere_practica_6
