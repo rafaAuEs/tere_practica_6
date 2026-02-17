@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class Empleado(models.Model):
     _name = 'reparto.empleado'
@@ -103,3 +104,43 @@ class Pedido(models.Model):
         ('3_refrigerados', 'Alimentos refrigerados'),
         ('4_organos', 'Órganos humanos')
     ], string='Urgencia', default='0_baja', required=True)
+
+    @api.constrains('repartidor_id', 'vehiculo_id', 'kilometros')
+    def _check_reglas_reparto(self):
+        for record in self:
+            # 1. Regla de Carnets
+            if record.vehiculo_id.tipo == 'furgoneta' and not record.repartidor_id.carnet_furgoneta:
+                raise ValidationError("¡Error! El repartidor %s no tiene carnet de furgoneta." % record.repartidor_id.nombre)
+            
+            if record.vehiculo_id.tipo == 'bicicleta' and not record.repartidor_id.carnet_ciclomotor:
+                # Nota: El enunciado pide carnet de ciclomotor, aunque sea una bici, seguimos la regla.
+                raise ValidationError("¡Error! El repartidor %s no tiene carnet para conducir este vehículo." % record.repartidor_id.nombre)
+
+            # 2. Regla de Distancias
+            if record.vehiculo_id.tipo == 'bicicleta' and record.kilometros > 10:
+                raise ValidationError("No se pueden realizar repartos de más de 10 Km en bicicleta.")
+            
+            if record.vehiculo_id.tipo == 'furgoneta' and record.kilometros < 1:
+                raise ValidationError("Los repartos de menos de 1 Km deben hacerse en bicicleta, no en furgoneta.")
+
+    @api.constrains('repartidor_id', 'vehiculo_id', 'estado')
+    def _check_disponibilidad(self):
+        for record in self:
+            if record.estado == 'camino':
+                # Buscar si el empleado ya está en otro reparto 'en camino'
+                repartos_empleado = self.search([
+                    ('repartidor_id', '=', record.repartidor_id.id),
+                    ('estado', '=', 'camino'),
+                    ('id', '!=', record.id)
+                ])
+                if repartos_empleado:
+                    raise ValidationError("El empleado %s ya está en un reparto activo." % record.repartidor_id.nombre)
+
+                # Buscar si el vehículo ya está en otro reparto 'en camino'
+                repartos_vehiculo = self.search([
+                    ('vehiculo_id', '=', record.vehiculo_id.id),
+                    ('estado', '=', 'camino'),
+                    ('id', '!=', record.id)
+                ])
+                if repartos_vehiculo:
+                    raise ValidationError("El vehículo ya está asignado a otro reparto activo.")
