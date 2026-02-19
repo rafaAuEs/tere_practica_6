@@ -3,3 +3,4 @@ access_reparto_empleado,reparto.empleado,model_reparto_empleado,base.group_user,
 access_reparto_vehiculo,reparto.vehiculo,model_reparto_vehiculo,base.group_user,1,1,1,1
 access_reparto_cliente,reparto.cliente,model_reparto_cliente,base.group_user,1,1,1,1
 access_reparto_pedido,reparto.pedido,model_reparto_pedido,base.group_user,1,1,1,1
+access_reparto_wizard,reparto.wizard,model_reparto_wizard,base.group_user,1,1,1,1

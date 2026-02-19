@@ -144,3 +144,10 @@ class Pedido(models.Model):
                 ])
                 if repartos_vehiculo:
                     raise ValidationError("El vehículo ya está asignado a otro reparto activo.")
+                
+    @api.model
+    def create(self, vals):
+        if vals.get('name', 'Nuevo') == 'Nuevo':
+            # Llamamos a la secuencia que definimos en el XML
+            vals['name'] = self.env['ir.sequence'].next_by_code('reparto.pedido') or 'Nuevo'
+        return super(Pedido, self).create(vals)

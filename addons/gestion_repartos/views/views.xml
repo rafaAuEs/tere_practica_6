@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_reparto_vehiculo_tree" model="ir.ui.view">
-            <field name="name">reparto.vehiculo.tree</field>
-            <field name="model">reparto.vehiculo</field>
+        <record id="view_reparto_pedido_tree" model="ir.ui.view">
+            <field name="name">reparto.pedido.tree</field>
+            <field name="model">reparto.pedido</field>
             <field name="arch" type="xml">
-                <tree>
-                    <field name="tipo"/>
-                    <field name="matricula"/>
-                    <field name="estado"/>
+                <tree decoration-info="estado == 'no_salido'" 
+                      decoration-warning="estado == 'camino'" 
+                      decoration-success="estado == 'entregado'">
+                    <field name="name"/>
+                    <field name="fecha_recepcion"/>
+                    <field name="repartidor_id"/>
+                    <field name="vehiculo_id"/>
+                    <field name="urgencia"/>
+                    <field name="estado" widget="badge" 
+                           decoration-info="estado == 'no_salido'" 
+                           decoration-warning="estado == 'camino'" 
+                           decoration-success="estado == 'entregado'"/>
                 </tree>
             </field>
+        </record>
+
+        <record id="action_reparto_pedido" model="ir.actions.act_window">
+            <field name="name">Pedidos de Reparto</field>
+            <field name="res_model">reparto.pedido</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_reparto_empleado" model="ir.actions.act_window">
+            <field name="name">Empleados</field>
+            <field name="res_model">reparto.empleado</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <record id="action_reparto_vehiculo" model="ir.actions.act_window">
@@ -25,26 +45,25 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <record id="action_reparto_empleado" model="ir.actions.act_window">
-            <field name="name">Empleados</field>
-            <field name="res_model">reparto.empleado</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
-        <record id="action_reparto_pedido" model="ir.actions.act_window">
-            <field name="name">Repartos</field>
-            <field name="res_model">reparto.pedido</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
         <menuitem id="menu_reparto_root" name="Gestión Repartos" sequence="10"/>
 
         <menuitem id="menu_reparto_operaciones" name="Operaciones" parent="menu_reparto_root" sequence="10"/>
-        <menuitem id="menu_reparto_pedidos" name="Pedidos de Reparto" parent="menu_reparto_operaciones" action="action_reparto_pedido" sequence="10"/>
+        
+        <menuitem id="menu_reparto_pedidos_list_view" 
+                  name="Listado de Repartos" 
+                  parent="menu_reparto_operaciones" 
+                  action="action_reparto_pedido" 
+                  sequence="1"/>
 
         <menuitem id="menu_reparto_config" name="Datos Maestros" parent="menu_reparto_root" sequence="20"/>
-        <menuitem id="menu_reparto_empleados" name="Empleados" parent="menu_reparto_config" action="action_reparto_empleado" sequence="10"/>
-        <menuitem id="menu_reparto_vehiculos" name="Vehículos" parent="menu_reparto_config" action="action_reparto_vehiculo" sequence="20"/>
-        <menuitem id="menu_reparto_clientes" name="Clientes" parent="menu_reparto_config" action="action_reparto_cliente" sequence="30"/>
+        
+        <menuitem id="menu_reparto_empleados" name="Personal" 
+                  parent="menu_reparto_config" action="action_reparto_empleado" sequence="10"/>
+        
+        <menuitem id="menu_reparto_vehiculos" name="Flota de Vehículos" 
+                  parent="menu_reparto_config" action="action_reparto_vehiculo" sequence="20"/>
+        
+        <menuitem id="menu_reparto_clientes" name="Base de Clientes" 
+                  parent="menu_reparto_config" action="action_reparto_cliente" sequence="30"/>
     </data>
 </odoo>

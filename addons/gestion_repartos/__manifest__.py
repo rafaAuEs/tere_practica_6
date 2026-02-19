@@ -16,7 +16,10 @@
     'depends': ['base'],
     'data': [
         'security/ir.model.access.csv',
+        'data/data.xml',
         'views/views.xml',
+        'wizard/reparto_wizard_view.xml',
+        'report/reparto_report.xml',
     ],
     'application': True,
     'installable': True,

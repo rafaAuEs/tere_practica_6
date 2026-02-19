@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_repartos_empleado" model="ir.actions.report">
+        <field name="name">Repartos Pendientes</field>
+        <field name="model">reparto.empleado</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gestion_repartos.report_repartos_template</field>
+        <field name="report_file">gestion_repartos.report_repartos_template</field>
+        <field name="print_report_name">'Repartos_Pendientes_%s' % (object.nombre)</field>
+        <field name="binding_model_id" ref="model_reparto_empleado"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_repartos_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Hoja de Ruta: <span t-field="o.nombre"/> <span t-field="o.apellidos"/></h2>
+                        <p>DNI: <span t-field="o.dni"/></p>
+                        <hr/>
+                        <h3>Repartos Pendientes de Salida</h3>
+                        <table class="table table-sm mt48">
+                            <thead>
+                                <tr>
+                                    <th>Referencia</th>
+                                    <th>Cliente</th>
+                                    <th>Dirección/Receptor</th>
+                                    <th>Urgencia</th>
+                                    <th>Km</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.reparto_ids.filtered(lambda r: r.estado == 'no_salido')" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.name"/></td>
+                                        <td><span t-field="line.cliente_id.nombre"/></td>
+                                        <td><span t-field="line.receptor_datos"/></td>
+                                        <td><span t-field="line.urgencia"/></td>
+                                        <td><span t-field="line.kilometros"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
